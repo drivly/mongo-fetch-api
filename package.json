@@ -15,7 +15,7 @@
 		"node": ">=14.16"
 	},
 	"scripts": {
-		"test": "xo && ava"
+		"test": "ava"
 	},
 	"files": [
 		"index.js"
@@ -24,7 +24,18 @@
 		"unicorn",
 		"fun"
 	],
-	"dependencies": {},
+	"dependencies": {
+		"@hono/node-server": "^0.2.4",
+		"bson": "^5.0.1",
+		"hono": "^3.0.1",
+		"i": "^0.3.7",
+		"js-yaml": "^4.1.0",
+		"mongodb": "^5.0.1",
+		"mongodb-data-api": "^0.4.0",
+		"node-fetch": "^3.3.0",
+		"npm": "^9.5.0",
+		"qs": "^6.11.0"
+	},
 	"devDependencies": {
 		"ava": "^4.3.1",
 		"xo": "^0.51.0"

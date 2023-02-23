@@ -7,7 +7,7 @@ import { serve } from '@hono/node-server'
 import { logger } from 'hono/logger'
 import { Hono } from 'hono'
 
-const config = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
+let config = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
 
 const app = new Hono()
 
@@ -40,7 +40,36 @@ const toEJSON = (doc) => {
 }
 
 app.all('/api/v1/action/:action', async c => {
+	const auth = c.req.header('api-key')
+	console.log(
+		config
+	)
+
+	if (!auth) {
+		return c.json({
+			error: 'api-key header is required',
+		}, 401)
+	}
+
+	let authPermissions = []
+
+	if (auth === config.readWrite) {
+		authPermissions = ['read', 'write']
+	} else if (auth === config.readOnly) {
+		authPermissions = ['read']
+	} else {
+		return c.json({
+			error: 'Invalid api-key',
+		}, 401)
+	}
+
 	const { action } = c.req.param()
+
+	if (!action.includes('find') && !authPermissions.includes('write')) {
+		return c.json({
+			error: 'You do not have permission to write',
+		}, 401)
+	}
 
 	let payload
 
@@ -122,4 +151,23 @@ app.all('/api/v1/action/:action', async c => {
 	return c.json(toEJSON(result))
 })
 
-export const startService = (port) => serve({ fetch: app.fetch, port })
+export const startService = (port, opt, clusters) => {
+	config = Object.assign(config, opt)
+
+	config.mongoClusters = {
+		...config.mongoClusters,
+		...clusters,
+	}
+
+	if (!config.readWrite) {
+		console.warn(
+			'[MONGO-FETCH-API] WARNING: readWrite is not set in config.yaml, you will not be able to write data without setting READ_WRITE_KEY in the environment.'
+		)
+	}
+
+	console.log(
+		`[MONGO-FETCH-API] Using clusters: ${Object.keys(config.mongoClusters).join(', ')}`
+	)
+
+	return serve({ fetch: app.fetch, port })
+}

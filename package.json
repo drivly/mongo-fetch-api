@@ -1,13 +1,13 @@
 {
-	"name": "unicorn-fun",
-	"version": "0.0.0",
-	"description": "My awesome module",
+	"name": "@drivly/mongo-fetch-api",
+	"version": "0.1.0",
+	"description": "Self-hosted Mongo Data API",
 	"license": "MIT",
-	"repository": "YOUR-GITHUB-USERNAME/unicorn-fun",
+	"repository": "drivly/mongo-fetch-api",
 	"author": {
-		"name": "YOUR NAME",
-		"email": "YOUR EMAIL",
-		"url": "YOUR WEBSITE"
+		"name": "Connor Vince",
+		"email": "connor@driv.ly",
+		"url": "https://driv.ly"
 	},
 	"type": "module",
 	"exports": "./index.js",
@@ -15,18 +15,24 @@
 		"node": ">=14.16"
 	},
 	"scripts": {
-		"test": "ava"
+		"test": "ava",
+		"serve": "node serve.js"
 	},
 	"files": [
-		"index.js"
+		"index.js",
+		"serve.js"
 	],
 	"keywords": [
-		"unicorn",
-		"fun"
+		"mongo",
+		"mongodb",
+		"api",
+		"rest",
+		"drivly"
 	],
 	"dependencies": {
 		"@hono/node-server": "^0.2.4",
 		"bson": "^5.0.1",
+		"dotenv": "^16.0.3",
 		"hono": "^3.0.1",
 		"i": "^0.3.7",
 		"js-yaml": "^4.1.0",

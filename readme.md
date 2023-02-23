@@ -1,65 +1,23 @@
-# node-module-boilerplate
+# Mongo Data API - Self-hosted
+Ever wanted to host your own version of Mongo's Data API? Now you can!
 
-> Boilerplate to kickstart creating a Node.js module
+## Installing and running
 
-This is what I use for [my own modules](https://www.npmjs.com/~sindresorhus).
+`npm i @drivly/mongo-fetch-api`
 
-Also check out [`node-cli-boilerplate`](https://github.com/sindresorhus/node-cli-boilerplate).
+`npm run serve`
 
-## Getting started
+## Environment variables
 
-**Click the "Use this template" button.**
+`READ_ONLY_KEY` - The key used to authenticate read-only requests, will refuse any action other than find.
+`READ_WRITE_KEY` - The key used to authenticate read-write requests.
+`PORT` - The port to run the server on.
+`MONGO_URI_${clusterName}` - The URL to connect to the MongoDB instance. Replace `${clusterName}` with the name of the cluster. This will be used as the "dataSource" field in the request.
 
-Alternatively, create a new directory and then run:
+e.g. `MONGO_URI_CLUSTER1=mongodb://localhost:27017`
 
-```sh
-curl -fsSL https://github.com/sindresorhus/node-module-boilerplate/archive/main.tar.gz | tar -xz --strip-components=1
+means you can access it via:
+
+```curl
+POST /api/v1/action/findOne?dataSource=CLUSTER1&database=...&collection=...
 ```
-
-There's also a [Yeoman generator](https://github.com/sindresorhus/generator-nm).
-
----
-
-**Remove everything from here and above**
-
----
-
-# unicorn-fun
-
-> My awesome module
-
-## Install
-
-```sh
-npm install unicorn-fun
-```
-
-## Usage
-
-```js
-import unicornFun from 'unicorn-fun';
-
-unicornFun('unicorns');
-//=> 'unicorns & rainbows'
-```
-
-## API
-
-### unicornFun(input, options?)
-
-#### input
-
-Type: `string`
-
-Lorem ipsum.
-
-#### options
-
-Type: `object`
-
-##### postfix
-
-Type: `string`\
-Default: `'rainbows'`
-
-Lorem ipsum.

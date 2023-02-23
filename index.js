@@ -7,7 +7,11 @@ import { serve } from '@hono/node-server'
 import { logger } from 'hono/logger'
 import { Hono } from 'hono'
 
-let config = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
+let config = {}
+
+try {
+	config = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
+} catch {}
 
 const app = new Hono()
 

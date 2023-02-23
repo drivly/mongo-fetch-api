@@ -16,6 +16,7 @@
 	},
 	"scripts": {
 		"test": "ava",
+		"push": "docker build -t drivly/mongo-fetch-api . && docker push drivly/mongo-fetch-api",
 		"serve": "node serve.js"
 	},
 	"files": [

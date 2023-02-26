@@ -45,9 +45,6 @@ const toEJSON = (doc) => {
 
 app.all('/api/v1/action/:action', async c => {
 	const auth = c.req.header('api-key')
-	console.log(
-		config
-	)
 
 	if (!auth) {
 		return c.json({
@@ -90,8 +87,10 @@ app.all('/api/v1/action/:action', async c => {
 		database,
 		collection,
 		filter,
+		pipeline,
 		sort,
 		limit,
+		skip,
 		projection,
 		documents,
 		document,
@@ -111,6 +110,14 @@ app.all('/api/v1/action/:action', async c => {
 		options.limit = 1000
 	}
 
+	if (skip) {
+		options.skip = skip
+	}
+
+	if (projection) {
+		options.projection = projection
+	}
+
 	if (!dataSource) return c.json({ error: 'dataSource is required' })
 	if (!database) return c.json({ error: 'database is required' })
 	if (!collection) return c.json({ error: 'collection is required' })
@@ -120,39 +127,54 @@ app.all('/api/v1/action/:action', async c => {
 
 	let result
 
-	switch (action) {
-		case 'find':
-			result = { documents: await collection.find(filter, options).toArray() }
-			break
-		case 'findOne':
-			result = { document: await collection.findOne(filter, projection || {}, options) }
-			break
-		case 'insertOne':
-			result = { insertedId: (await collection.insertOne(document)).insertedId }
-			break
-		case 'insertMany':
-			result = { insertedIds: (await collection.insertMany(documents)).insertedIds }
-			break
-		case 'updateOne':
-			result = await collection.updateOne(filter, update, options)
-			break
-		case 'updateMany':
-			result = await collection.updateMany(filter, update)
-			break
-		case 'replaceOne':
-			result = await collection.replaceOne(filter, document, options)
-			break
-		case 'deleteOne':
-			result = await collection.deleteOne(filter, options)
-			break
-		case 'deleteMany':
-			result = await collection.deleteMany(filter, options)
-			break
-		default:
-			return c.json({ error: 'Unknown action' })
+	try {
+		switch (action) {
+			case 'find':
+				result = { documents: await collection.find(filter, options).toArray() }
+				console.log(options)
+				break
+			case 'findOne':
+				result = { document: await collection.findOne(filter, options) }
+				break
+			case 'insertOne':
+				result = { insertedId: (await collection.insertOne(document)).insertedId }
+				break
+			case 'insertMany':
+				result = { insertedIds: (await collection.insertMany(documents)).insertedIds }
+				break
+			case 'updateOne':
+				result = await collection.updateOne(filter, update, options)
+				break
+			case 'updateMany':
+				result = await collection.updateMany(filter, update)
+				break
+			case 'replaceOne':
+				result = await collection.replaceOne(filter, document, options)
+				break
+			case 'deleteOne':
+				result = await collection.deleteOne(filter, options)
+				break
+			case 'deleteMany':
+				result = await collection.deleteMany(filter, options)
+				break
+			case 'aggregate':
+				result = { documents: await collection.aggregate(pipeline).toArray() }
+				break
+			default:
+				return c.json({ error: 'Unknown action' })
+		}
+	} catch (e) {
+		return c.json({ error: e.message }, 400)
 	}
 
-	return c.json(toEJSON(result))
+	return new Response(
+		JSON.stringify(toEJSON(result)),
+		{
+			headers: {
+				'Content-Type': 'application/ejson',
+			}
+		}
+	)
 })
 
 export const startService = (port, opt, clusters) => {

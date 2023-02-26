@@ -27,6 +27,19 @@ const main = async () => {
     }
   )
 }
+
+main()
+```
+
+#### Node
+```bash
+git clone https://github.com/drivly/mongo-fetch-api.git
+
+cd mongo-fetch-api
+
+npm install
+
+npm run serve
 ```
 
 #### Docker

@@ -17,7 +17,8 @@
 	"scripts": {
 		"test": "ava",
 		"push": "docker build -t drivly/mongo-fetch-api . && docker push drivly/mongo-fetch-api",
-		"serve": "node serve.js"
+		"serve": "node serve.js",
+		"bump": "git add . && npm version patch && git push && git push --tags"
 	},
 	"files": [
 		"index.js",

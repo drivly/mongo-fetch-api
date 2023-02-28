@@ -12,7 +12,7 @@ const main = async () => {
 
   for (const key in process.env) {
     if (key.startsWith('MONGO_URI_')) {
-      connectionStrings[key.split('MONGO_URI_')[1]] = process.env[key]
+      connectionStrings[key.split('MONGO_URI_')[1].toLowerCase()] = process.env[key]
     }
   }
 

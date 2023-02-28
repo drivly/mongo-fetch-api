@@ -178,7 +178,7 @@ app.all('/api/v1/action/:action', async c => {
 })
 
 export const startService = (port, opt, clusters) => {
-	config = Object.assign(config, opt)
+	config = Object.assign(config || {}, opt || {})
 
 	config.mongoClusters = {
 		...config.mongoClusters,

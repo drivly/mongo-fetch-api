@@ -118,12 +118,18 @@ app.all('/api/v1/action/:action', async c => {
 		options.projection = projection
 	}
 
-	if (!dataSource) return c.json({ error: 'dataSource is required' })
-	if (!database) return c.json({ error: 'database is required' })
-	if (!collection) return c.json({ error: 'collection is required' })
+	const dbOnlyActions = [
+		'listCollections',
+		'listDatabases'
+	]
+
+	if (!dataSource) return c.json({ error: 'dataSource is required' }, 400)
+	if (!database) return c.json({ error: 'database is required' }, 400)
+	if (!collection && !dbOnlyActions.includes(action)) return c.json({ error: 'collection is required' }, 400)
 
 	const client = await getClient(dataSource)
-	collection = await client.db(database).collection(collection)
+
+	if (collection) collection = client.db(database).collection(collection)
 
 	let result
 
@@ -159,6 +165,31 @@ app.all('/api/v1/action/:action', async c => {
 				break
 			case 'aggregate':
 				result = { documents: await collection.aggregate(pipeline).toArray() }
+				break
+			case 'countDocuments':
+				result = { count: await collection.countDocuments(filter) }
+				break
+			case 'listCollections':
+				result = {
+					collections: (await client.db(database).listCollections().toArray()).map(x => {
+						return {
+							name: x.name,
+							type: x.type,
+							options: x.options,
+						}
+					})
+				}
+				break
+			case 'listDatabases':
+				result = {
+					databases: (await client.db().admin().listDatabases()).databases.map(x => {
+						return {
+							name: x.name,
+							//sizeOnDisk: x.sizeOnDisk,
+							empty: x.empty,
+						}
+					})
+				}
 				break
 			default:
 				return c.json({ error: 'Unknown action' })

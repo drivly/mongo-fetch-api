@@ -118,6 +118,8 @@ app.all('/api/v1/action/:action', async c => {
 		options.projection = projection
 	}
 
+	if (filter) filter = EJSON.parse(JSON.stringify(filter))
+
 	const dbOnlyActions = [
 		'listCollections',
 		'listDatabases'

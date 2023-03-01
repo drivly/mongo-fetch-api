@@ -2,12 +2,15 @@ import { MongoClient } from 'mongodb'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import qs from 'qs'
+import humanizeDuration from 'humanize-duration'
+import fetch from 'node-fetch'
 import { BSON, EJSON } from 'bson'
 import { serve } from '@hono/node-server'
 import { logger } from 'hono/logger'
 import { Hono } from 'hono'
 
 let config = {}
+let bootTime = null
 
 try {
 	config = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
@@ -37,11 +40,32 @@ const getClient = async (cluster) => {
 	return client
 }
 
-app.get('/', c => c.text('Hello World!'))
-
 const toEJSON = (doc) => {
 	return JSON.parse(EJSON.stringify(doc))
 }
+
+app.get('/', async c => {
+	const metadata = await fetch(
+		'https://www.cloudflare.com/cdn-cgi/trace'
+	).then(x => x.text())
+
+	const colo = metadata.split('colo=')[1].split('\n')[0]
+
+	return c.json({
+		api: {
+			icon: '📡',
+			name: 'MongoDB Data API',
+			description: 'A self-hosted clone of Atlas\'s Data API',
+			repo: 'https://github.com/drivly/mongo-fetch-api',
+			uptime: bootTime ? humanizeDuration(Date.now() - bootTime) : null,
+			colocation: colo,
+		},
+		data: {
+			clusters: Object.keys(config.mongoClusters)
+		},
+		user: {}
+	})
+})
 
 app.all('/api/v1/action/:action', async c => {
 	const auth = c.req.header('api-key')
@@ -227,6 +251,8 @@ export const startService = (port, opt, clusters) => {
 	console.log(
 		`[MONGO-FETCH-API] Using clusters: ${Object.keys(config.mongoClusters).join(', ')}`
 	)
+
+	bootTime = Date.now()
 
 	return serve({ fetch: app.fetch, port })
 }

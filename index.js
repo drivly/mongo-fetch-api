@@ -187,7 +187,7 @@ app.all('/api/v1/action/:action', async c => {
 				result = await collection.deleteOne(filter, options)
 				break
 			case 'deleteMany':
-				result = await collection.deleteMany(filter, options)
+				result = await collection.deleteMany(filter)
 				break
 			case 'aggregate':
 				result = { documents: await collection.aggregate(pipeline).toArray() }

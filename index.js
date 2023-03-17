@@ -195,6 +195,12 @@ app.all('/api/v1/action/:action', async c => {
 			case 'countDocuments':
 				result = { count: await collection.countDocuments(filter) }
 				break
+			case 'estimatedDocumentCount':
+				result = { count: await collection.estimatedDocumentCount() }
+				break
+			case 'distinct':
+				result = { values: await collection.distinct(filter) }
+				break
 			case 'listCollections':
 				result = {
 					collections: (await client.db(database).listCollections().toArray()).map(x => {

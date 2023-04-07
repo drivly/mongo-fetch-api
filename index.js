@@ -76,6 +76,10 @@ app.all('/api/v1/action/:action', async c => {
 		}, 401)
 	}
 
+	console.log(
+		config
+	)
+
 	let authPermissions = []
 
 	if (auth === config.readWrite) {

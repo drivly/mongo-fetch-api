@@ -1,5 +1,5 @@
 {
-	"name": "@drivly/mongo-fetch-api",
+	"name": "mongo-fetch-api",
 	"version": "0.2.0",
 	"description": "Self-hosted Mongo Data API",
 	"license": "MIT",

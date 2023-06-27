@@ -12,23 +12,19 @@ This project aims to solve that problem by running the API on a server, and usin
 
 #### Import
 ```js
-import { createService } from '@drivly/mongo-fetch-api'
+import { startService } from 'mongo-fetch-api'
 
-const main = async () => {
-  await createService(
-    3000, // port
-    {
-      readOnly: 'readonlykey',
-      readWrite: 'secret'
-    },
-    {
-      cluster1: 'mongodb://localhost:27017',
-      cluster2: 'mongodb://localhost:27018'
-    }
-  )
-}
-
-main()
+await startService(
+	3000, // port
+	{
+		readOnly: 'readonlykey',
+		readWrite: 'secret'
+	},
+	{
+		cluster1: 'mongodb://localhost:27017',
+		cluster2: 'mongodb://localhost:27018'
+	}
+)
 ```
 
 #### Node

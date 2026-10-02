@@ -1,4 +1,4 @@
-# Never send secrets or history to a build: a committed .env was copied into the image by `COPY . .`.
+# Keep env files, local config and history out of the build context.
 .env
 .env.*
 config.yaml

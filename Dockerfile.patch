@@ -1,0 +1,7 @@
+# The running image (v40, built 2023-06-27), with only the fixed index.js and the new scrub.js copied over
+# it. It can't be rebuilt from source: yarn.lock is gitignored, so `yarn install` today would pull newer
+# dependencies. The patch keeps node, node_modules and the rest of the image byte for byte as they run now.
+# The original Dockerfile has no WORKDIR, so `COPY . .` put the app at /. Check with
+# `fly ssh console -a mda -C 'ls /'` before building.
+FROM registry.fly.io/mda@sha256:dee1dd750774e923b60a17ad2d3634e0dccce04a82fd438287bbb686fa5f9ef0
+COPY index.js scrub.js /

@@ -1,0 +1,6 @@
+# Keep env files, local config and history out of the build context.
+.env
+.env.*
+config.yaml
+.git
+node_modules

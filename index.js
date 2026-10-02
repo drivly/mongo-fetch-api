@@ -8,9 +8,14 @@ import { BSON, EJSON } from 'bson'
 import { serve } from '@hono/node-server'
 import { logger } from 'hono/logger'
 import { Hono } from 'hono'
+import { scrubUri } from './scrub.js'
 
 let config = {}
 let bootTime = null
+
+// config holds the connection strings with their passwords and the API keys, so it is never logged (it
+// was, on every request: about 4,900 log lines a day, 2026-10-02), and an error's text is scrubbed
+// (scrub.js) before it is logged or answered.
 
 try {
 	config = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
@@ -19,6 +24,13 @@ try {
 const app = new Hono()
 
 app.use(logger())
+
+// Hono's default prints the whole error. A driver error can carry the connection string, so only its name
+// and scrubbed message are logged.
+app.onError((err, c) => {
+	console.error(`[MONGO-FETCH-API] ${err?.name || 'Error'}: ${scrubUri(err?.message)}`)
+	return c.text('Internal Server Error', 500)
+})
 
 const clients = {}
 
@@ -75,10 +87,6 @@ app.all('/api/v1/action/:action', async c => {
 			error: 'api-key header is required',
 		}, 401)
 	}
-
-	console.log(
-		config
-	)
 
 	let authPermissions = []
 
@@ -167,7 +175,6 @@ app.all('/api/v1/action/:action', async c => {
 		switch (action) {
 			case 'find':
 				result = { documents: await collection.find(filter, options).toArray() }
-				console.log(options)
 				break
 			case 'findOne':
 				result = { document: await collection.findOne(filter, options) }
@@ -231,7 +238,7 @@ app.all('/api/v1/action/:action', async c => {
 				return c.json({ error: 'Unknown action' })
 		}
 	} catch (e) {
-		return c.json({ error: e.message }, 400)
+		return c.json({ error: scrubUri(e.message) }, 400)
 	}
 
 	return new Response(

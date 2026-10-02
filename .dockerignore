@@ -1,0 +1,6 @@
+# Never send secrets or history to a build: a committed .env was copied into the image by `COPY . .`.
+.env
+.env.*
+config.yaml
+.git
+node_modules

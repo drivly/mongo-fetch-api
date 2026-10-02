@@ -18,11 +18,13 @@
 		"test": "ava",
 		"push": "docker build -t drivly/mongo-fetch-api . && docker push drivly/mongo-fetch-api",
 		"serve": "node serve.js",
-		"bump": "git add . && npm version patch && git push && git push --tags"
+		"bump": "git add . && npm version patch && git push && git push --tags",
+		"guard": "node --test guard/no-secret-logs.test.js"
 	},
 	"files": [
 		"index.js",
-		"serve.js"
+		"serve.js",
+		"scrub.js"
 	],
 	"keywords": [
 		"mongo",
